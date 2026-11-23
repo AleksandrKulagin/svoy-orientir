@@ -24,11 +24,15 @@ export const TARIFFS = {
   full: { title: 'Полный ориентир', color: COLORS.tiger, price: 799 },
 }
 
-// Видео раздела. src — файл (mp4/webm), embed — ссылка для вставки (YouTube, RuTube, VK), poster — обложка (необязательно).
+// Видео раздела. Файлы лежат в public/videos/ (положите туда Проба 1.mp4, Проба 2.mp4, Проба 3.mp4).
+// title — название в списке; src — файл (mp4/webm); embed — ссылка для вставки (YouTube, RuTube, VK); poster — обложка (необязательно).
+// duration можно не указывать: продолжительность читается из самого файла.
+const videoFile = (name) => encodeURI(`${import.meta.env.BASE_URL || '/'}videos/${name}`)
+
 export const VIDEOS = [
-  { title: 'Видео 1', duration: '', src: '', embed: '' },
-  { title: 'Видео 2', duration: '', src: '', embed: '' },
-  { title: 'Видео 3', duration: '', src: '', embed: '' },
+  { title: 'Проба 1. Тяни-тяни', duration: '', src: videoFile('Проба 1. Тяни-тяни.mp4'), embed: '', poster: videoFile('Проба 1. Тяни-тяни.jpg') },
+  { title: 'Проба 2. Звони', duration: '', src: videoFile('Проба 2. Звони.mp4'), embed: '', poster: videoFile('Проба 2. Звони.jpg') },
+  { title: 'Проба 3. Движение глаз', duration: '', src: videoFile('Проба 3. Движение глаз.mp4'), embed: '', poster: videoFile('Проба 3. Движение глаз.jpg') },
 ]
 
 // Подпись цены: 0 показываем как «бесплатно»

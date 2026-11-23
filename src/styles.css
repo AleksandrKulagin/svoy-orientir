@@ -1,5 +1,5 @@
 @font-face { font-family: 'Tilda Sans VF'; src: url('/fonts/TildaSans-VF.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
-:root { --font-main: 'Tilda Sans VF', 'Onest', system-ui, sans-serif; --font-accent: 'Balsamiq Sans', system-ui, cursive; --f-back: #264641; --f-front: #2f5a53; --bg: #f5f1ea; --ink: #2b2b2b; --mint: #E1F0EB; --mint-ink: #19786f; --sand: #e8dac5; --btn: #1c7a6a; }
+:root { --font-main: 'Tilda Sans VF', 'Onest', system-ui, sans-serif; --font-accent: 'Balsamiq Sans', system-ui, cursive; --f-back: #264641; --f-front: #2f5a53; --bg: #f5f1ea; --ink: #343A36; --mint: #E1F0EB; --mint-ink: #19786f; --sand: #e8dac5; --btn: #1c7a6a; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 110px; scrollbar-gutter: stable; font-size-adjust: .47; }
 body { overflow-x: hidden; margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-main); }
@@ -22,7 +22,7 @@ header.scrolled .hbar { padding: 8px 0; }
 header.scrolled .logo { height: 48px; }
 header nav { display: flex; gap: 6px; margin-right: -16px; flex-wrap: wrap; font: 700 .92rem var(--font-main); }
 /* ссылка плавно заливается мятным #E1F0EB, текст — цвет --mint-ink (при наведении и для текущего раздела) */
-header nav a { padding: 9px 16px; border-radius: 999px; color: #2d4b46; background-color: rgba(225, 240, 235, 0); text-decoration: none; transition: color .35s ease, background-color .35s ease; }
+header nav a { padding: 9px 16px; border-radius: 999px; color: var(--ink); background-color: rgba(225, 240, 235, 0); text-decoration: none; transition: color .35s ease, background-color .35s ease; }
 header nav a[aria-current="true"], header nav a:focus-visible { color: var(--mint-ink); background-color: #E1F0EB; }
 @media (hover: hover) and (pointer: fine) { header nav a:hover { color: var(--mint-ink); background-color: #E1F0EB; } }
 
@@ -153,7 +153,7 @@ h2 { font-family: var(--font-main); display: flex; align-items: center; gap: 8px
 .thanks p { margin: 0 0 18px; line-height: 1.5; }
 
 /* Окно «Видео»: слева плеер, справа список (значки или таблица) */
-.video-view { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.video-view { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; align-items: start; }
 .now { margin: 0 0 14px; font: 700 1.3rem/1.2 var(--font-main); }
 .player { aspect-ratio: 16 / 9; overflow: hidden; display: grid; place-items: center; border-radius: 18px; background: radial-gradient(circle at 50% 40%, #5a1220, #14070a); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08); }
 .player iframe, .player video { width: 100%; height: 100%; border: 0; background: #000; }
