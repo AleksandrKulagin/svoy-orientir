@@ -20,15 +20,6 @@ const ListIcon = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" /></svg>
 )
 
-// 75 → «1:15», 3725 → «1:02:05»
-function fmt(sec) {
-  if (!Number.isFinite(sec)) return ''
-  const t = Math.round(sec)
-  const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60
-  const ss = String(s).padStart(2, '0')
-  return h ? `${h}:${String(m).padStart(2, '0')}:${ss}` : `${m}:${ss}`
-}
-
 function VideoView() {
   const [i, setI] = useState(0)
   const [dur, setDur] = useState({}) // src → «m:ss», читается из файла
