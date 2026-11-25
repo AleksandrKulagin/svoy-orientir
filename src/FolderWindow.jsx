@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-const FOCUSABLE = 'button, input, textarea, select, a[href]'
+const FOCUSABLE = 'button, input, textarea, select, a[href], [tabindex="0"]'
 const CLOSE_MS = 140 // = --t-out в styles.css (.overlay)
 
 // Окно в виде папки: заголовок во вкладке, цвет задаётся через color.
@@ -24,14 +24,14 @@ export default function FolderWindow({ title, color, onClose, panelClass = '', v
     const onKey = (e) => {
       if (e.key === 'Escape') return close()
       if (e.key !== 'Tab') return
-      const items = [...box.querySelectorAll(FOCUSABLE)].filter((el) => !el.disabled)
+      const items = [...box.querySelectorAll(FOCUSABLE)].filter((el) => !el.disabled && el.tabIndex >= 0)
       const first = items[0], last = items[items.length - 1]
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
     }
     document.addEventListener('keydown', onKey)
     document.body.style.overflow = 'hidden'
-    box.querySelector('input, textarea, .close')?.focus({ preventScroll: true })
+    box.querySelector('input:not([type=range]), textarea, .close')?.focus({ preventScroll: true })
     return () => {
       document.removeEventListener('keydown', onKey)
       document.body.style.overflow = ''

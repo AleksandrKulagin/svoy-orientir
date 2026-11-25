@@ -24,11 +24,25 @@ export const TARIFFS = {
   full: { title: 'Полный ориентир', color: COLORS.tiger, price: 799 },
 }
 
-// Видео раздела. src — файл (mp4/webm), embed — ссылка для вставки (YouTube, RuTube, VK), poster — обложка (необязательно).
+// Видео раздела. Список собирается АВТОМАТИЧЕСКИ из папки public/videos (см. vite-plugin-videos.js):
+// каждый mp4/webm/mov-файл становится видео, а картинка с тем же именем — его постером.
+import videoFiles from 'virtual:videos'
+
+// Красивые названия для файлов (ключ — имя файла без расширения). Для остальных файлов название = имя файла.
+const TITLES = {
+  'Проба 1': 'Проба 1. Тяни-тяни',
+  'Проба 2': 'Проба 2. Звони',
+  'Проба 3': 'Проба 3. Движение глаз',
+}
+
+// Видео по ссылке (YouTube, RuTube, VK): { title: 'Название', embed: 'https://…' } — добавляются после файлов.
+const EMBEDS = []
+
+const fileUrl = (name) => encodeURI(`${import.meta.env.BASE_URL || '/'}videos/${name}`)
+
 export const VIDEOS = [
-  { title: 'Видео 1', duration: '', src: '', embed: '' },
-  { title: 'Видео 2', duration: '', src: '', embed: '' },
-  { title: 'Видео 3', duration: '', src: '', embed: '' },
+  ...videoFiles.map((v) => ({ title: TITLES[v.name] || v.name, duration: '', src: fileUrl(v.file), poster: v.poster ? fileUrl(v.poster) : '', embed: '' })),
+  ...EMBEDS.map((v) => ({ duration: '', src: '', poster: '', ...v })),
 ]
 
 // Подпись цены: 0 показываем как «бесплатно»

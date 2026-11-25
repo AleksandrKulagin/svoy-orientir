@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import FolderWindow from './FolderWindow.jsx'
+import VideoPlayer, { fmt } from './VideoPlayer.jsx'
 import { SECTIONS, TERMS, VIDEOS, GLOSSARY_COLOR } from './content.js'
 
 const Play = ({ size }) => (
@@ -21,17 +22,44 @@ const ListIcon = () => (
 
 function VideoView() {
   const [i, setI] = useState(0)
+  const [dur, setDur] = useState({}) // src → «m:ss», читается из файла
+  const [bad, setBad] = useState({}) // src → true, если файл не открылся
+  const [ratio, setRatio] = useState({}) // src → ширина/высота кадра (для вертикальных видео)
+  useEffect(() => {
+    const probes = VIDEOS.filter((x) => x.src).map((x) => {
+      const el = document.createElement('video')
+      el.preload = 'metadata'
+      el.onloadedmetadata = () => {
+        setDur((d) => ({ ...d, [x.src]: fmt(el.duration) }))
+        if (el.videoWidth && el.videoHeight) setRatio((r) => ({ ...r, [x.src]: el.videoWidth / el.videoHeight }))
+      }
+      el.onerror = () => setBad((b) => ({ ...b, [x.src]: true }))
+      el.src = x.src
+      return el
+    })
+    return () => probes.forEach((el) => { el.onloadedmetadata = el.onerror = null; el.removeAttribute('src'); el.load() })
+  }, [])
   const [view, setView] = useState('icons') // icons | table
   const v = VIDEOS[i]
+  if (!v) {
+    return (
+      <div className="video-view">
+        <div className="vv-main">
+          <p className="now">Видео</p>
+          <div className="player"><div className="player-empty"><Play size={84} /><span>Видео скоро появится</span></div></div>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="video-view">
       <div className="vv-main">
         <p className="now">{v.title}</p>
-        <div className="player">
+        <div className="player" style={ratio[v.src] ? { '--r': ratio[v.src] } : undefined}>
           {v.embed ? (
             <iframe src={v.embed} title={v.title} allow="fullscreen; picture-in-picture" allowFullScreen />
-          ) : v.src ? (
-            <video key={v.src} src={v.src} poster={v.poster} controls />
+          ) : v.src && !bad[v.src] ? (
+            <VideoPlayer key={v.src} src={v.src} poster={v.poster || undefined} onError={() => setBad((b) => ({ ...b, [v.src]: true }))} />
           ) : (
             <div className="player-empty"><Play size={84} /><span>Видео скоро появится</span></div>
           )}
@@ -55,7 +83,7 @@ function VideoView() {
                 {view === 'table' && <span className="pl-num">{n + 1}</span>}
                 <span className="pl-ico"><VideoIcon /></span>
                 <span className="pl-title">{x.title}</span>
-                <span className="pl-time">{x.duration || '—'}</span>
+                <span className="pl-time">{x.duration || dur[x.src] || '—'}</span>
               </button>
             </li>
           ))}
