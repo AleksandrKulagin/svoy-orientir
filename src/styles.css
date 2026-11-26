@@ -193,7 +193,7 @@ h2 { font-family: var(--font-main); display: flex; align-items: center; gap: 8px
 .seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 12px; background: rgba(255, 255, 255, .09); font-family: var(--font-main); }
 .seg button { display: inline-flex; align-items: center; gap: 6px; padding: 7px 11px; border: 0; border-radius: 9px; background: none; color: inherit; font: 600 .8rem var(--font-main); cursor: pointer; }
 .seg button[aria-pressed="true"] { background: var(--fc); color: #fff; }
-.playlist { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.playlist { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; align-content: start; }
 .playlist button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border: 0; border-radius: 12px; background: rgba(255, 255, 255, .07); color: inherit; font: 600 .95rem var(--font-main); text-align: left; cursor: pointer; }
 @media (hover: hover) and (pointer: fine) { .playlist button:hover { background: rgba(255, 255, 255, .14); } }
 .playlist button[aria-current="true"] { background: var(--fc); }
@@ -208,6 +208,7 @@ h2 { font-family: var(--font-main); display: flex; align-items: center; gap: 8px
 .playlist.table button, .pl-head { display: grid; grid-template-columns: 1.4rem 28px minmax(0, 1fr) 7rem; align-items: center; gap: 10px; }
 .pl-head { padding: 0 12px 2px; font-size: .72rem; opacity: .6; letter-spacing: .02em; }
 .playlist.table .pl-time, .pl-head span:last-child { margin: 0; text-align: right; }
+.playlist.table .pl-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pl-num { opacity: .7; font-weight: 400; }
 
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
