@@ -23,9 +23,6 @@ const VOL_OFF = <>{SPEAKER}<path d="M16 9.5l5 5M21 9.5l-5 5" {...line} /></>
 const FS_ENTER = <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" {...line} />
 const FS_EXIT = <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" {...line} />
 const REPLAY = <><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" {...line} /><path d="M21 3v5h-5" {...line} /></>
-// крупный треугольник для центральной кнопки: центр тяжести ровно в центре круга, скруглённые углы
-const PLAY_BIG = <path d="M8.6 6.2v11.6L19 12 8.6 6.2Z" fill="currentColor" stroke="currentColor" strokeWidth="2.4" strokeLinejoin="round" />
-
 // Свой плеер: пуск/пауза, перемотка, время, громкость, полный экран; клавиши: пробел/K, ←/→ (5 с), ↑/↓ (громкость), M, F
 export default function VideoPlayer({ src, poster, onError }) {
   const box = useRef(null)
@@ -42,6 +39,7 @@ export default function VideoPlayer({ src, poster, onError }) {
   const [idle, setIdle] = useState(false)
   const [wait, setWait] = useState(false)
   const [drag, setDrag] = useState(false)
+  const [hover, setHover] = useState(null) // { pct, time } — позиция курсора над шкалой
 
   useEffect(() => { vid.current.volume = saved.volume; vid.current.muted = saved.muted }, [])
 
@@ -95,6 +93,12 @@ export default function VideoPlayer({ src, poster, onError }) {
     const r = bar.current.getBoundingClientRect()
     seekTo(clamp((e.clientX - r.left) / r.width, 0, 1) * dur)
   }
+  // время под курсором при наведении на шкалу
+  const hoverAt = (e) => {
+    const r = bar.current.getBoundingClientRect()
+    const pct = clamp((e.clientX - r.left) / r.width, 0, 1)
+    setHover({ pct, time: pct * dur })
+  }
   const onSeekKey = (e) => {
     const step = { ArrowLeft: -5, ArrowRight: 5, PageDown: -10, PageUp: 10 }[e.key]
     if (step) seekTo(vid.current.currentTime + step)
@@ -143,17 +147,21 @@ export default function VideoPlayer({ src, poster, onError }) {
         onVolumeChange={(e) => { const v = e.currentTarget; setVol(v.volume); setMuted(v.muted); saved.volume = v.volume; saved.muted = v.muted }}
         onError={onError} />
       {wait && playing && <span className="vp-spin" aria-hidden="true" />}
-      <button type="button" className={`vp-big${ended ? ' replay' : ''}`} aria-label={ended ? 'Повторить' : 'Воспроизвести'} title={ended ? 'Повторить' : 'Воспроизвести'} aria-hidden={playing} tabIndex={playing ? -1 : 0} onClick={toggle}>{ended ? <><Icon size={24}>{REPLAY}</Icon><span>Повторить</span></> : <Icon size={46}>{PLAY_BIG}</Icon>}</button>
+      <button type="button" className={`vp-big${ended ? ' replay' : ''}`} aria-label={ended ? 'Повторить' : 'Воспроизвести'} title={ended ? 'Повторить' : 'Воспроизвести'} aria-hidden={playing} tabIndex={playing ? -1 : 0} onClick={toggle}>{ended ? <><Icon size={24}>{REPLAY}</Icon><span>Повторить</span></> : <Icon size={24}>{PLAY}</Icon>}</button>
       <div className="vp-bar">
         <div ref={bar} className={`vp-seek${drag ? ' drag' : ''}`} role="slider" tabIndex={0} aria-label="Перемотка"
           aria-valuemin={0} aria-valuemax={Math.round(dur) || 0} aria-valuenow={Math.round(time)} aria-valuetext={`${fmt(time) || '0:00'} из ${total}`}
           onPointerDown={(e) => { if (!dur) return; e.currentTarget.setPointerCapture(e.pointerId); setDrag(true); seekAt(e) }}
-          onPointerMove={(e) => { if (drag) seekAt(e) }} onPointerUp={() => setDrag(false)} onPointerCancel={() => setDrag(false)} onKeyDown={onSeekKey}>
+          onPointerMove={(e) => { if (drag) seekAt(e); hoverAt(e) }}
+          onPointerUp={(e) => { setDrag(false); if (e.pointerType !== 'mouse') setHover(null) }}
+          onPointerCancel={() => { setDrag(false); setHover(null) }}
+          onPointerLeave={() => setHover(null)} onKeyDown={onSeekKey}>
           <div className="vp-track">
             <div className="vp-buf" style={{ width: pct(buf) }} />
             <div className="vp-played" style={{ width: pct(time) }} />
             <div className="vp-thumb" style={{ left: pct(time) }} />
           </div>
+          {hover && dur > 0 && <span className="vp-hint" style={{ left: `${hover.pct * 100}%` }}>{fmt(hover.time)}</span>}
         </div>
         <div className="vp-row">
           <button type="button" className="vp-btn" aria-label={playing ? 'Пауза' : ended ? 'Повторить' : 'Воспроизвести'} onClick={toggle}><Icon>{playing ? PAUSE : ended ? REPLAY : PLAY}</Icon></button>

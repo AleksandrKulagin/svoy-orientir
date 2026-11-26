@@ -41,8 +41,8 @@ const EMBEDS = []
 const fileUrl = (name) => encodeURI(`${import.meta.env.BASE_URL || '/'}videos/${name}`)
 
 export const VIDEOS = [
-  ...videoFiles.map((v) => ({ title: TITLES[v.name] || v.name, duration: '', src: fileUrl(v.file), poster: v.poster ? fileUrl(v.poster) : '', embed: '' })),
-  ...EMBEDS.map((v) => ({ duration: '', src: '', poster: '', ...v })),
+  ...videoFiles.map((v) => ({ title: TITLES[v.name] || v.name, duration: '', src: fileUrl(v.file), poster: v.poster ? fileUrl(v.poster) : '', desc: v.desc ? fileUrl(v.desc) : '', embed: '' })),
+  ...EMBEDS.map((v) => ({ duration: '', src: '', poster: '', desc: '', ...v })),
 ]
 
 // Подпись цены: 0 показываем как «бесплатно»

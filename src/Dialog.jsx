@@ -41,21 +41,35 @@ function VideoView() {
   }, [])
   const [view, setView] = useState('icons') // icons | table
   const v = VIDEOS[i]
+  const [desc, setDesc] = useState('') // текст описания из одноимённого .txt
+  const [openDesc, setOpenDesc] = useState(false)
+  useEffect(() => {
+    setDesc('')
+    setOpenDesc(false)
+    if (!v?.desc) return
+    let alive = true
+    fetch(v.desc)
+      .then((r) => (r.ok ? r.text() : ''))
+      .then((t) => { if (alive) setDesc(t.trim()) })
+      .catch(() => {})
+    return () => { alive = false }
+  }, [v?.desc])
   if (!v) {
     return (
       <div className="video-view">
         <div className="vv-main">
           <p className="now">Видео</p>
-          <div className="player"><div className="player-empty"><Play size={84} /><span>Видео скоро появится</span></div></div>
+          <div className="vv-stage"><div className="player"><div className="player-empty"><Play size={84} /><span>Видео скоро появится</span></div></div></div>
         </div>
       </div>
     )
   }
   return (
     <div className="video-view">
-      <div className="vv-main">
+      <div className="vv-main" style={ratio[v.src] ? { '--r': ratio[v.src] } : undefined}>
         <p className="now">{v.title}</p>
-        <div className="player" style={ratio[v.src] ? { '--r': ratio[v.src] } : undefined}>
+        <div className="vv-stage">
+        <div className="player">
           {v.embed ? (
             <iframe src={v.embed} title={v.title} allow="fullscreen; picture-in-picture" allowFullScreen />
           ) : v.src && !bad[v.src] ? (
@@ -63,6 +77,16 @@ function VideoView() {
           ) : (
             <div className="player-empty"><Play size={84} /><span>Видео скоро появится</span></div>
           )}
+        </div>
+        </div>
+        <div className={`vv-desc${openDesc ? ' open' : ''}`}>
+          <button type="button" className="vv-desc-head" aria-expanded={openDesc} aria-controls="video-desc" onClick={() => setOpenDesc((o) => !o)}>
+            <span>Описание к видео</span>
+            <span className="vv-desc-btn" aria-hidden="true">
+              <svg viewBox="0 0 16 16" width="18" height="18"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </span>
+          </button>
+          <div id="video-desc" className="vv-desc-body" hidden={!openDesc}>{desc || <span className="vv-desc-soon">Описание скоро появится.</span>}</div>
         </div>
       </div>
       <div className="vv-side">

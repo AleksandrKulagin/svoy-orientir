@@ -100,7 +100,9 @@ export default function App() {
     return () => mq.removeEventListener('change', on)
   }, [])
   useEffect(() => {
-    const on = () => {
+    let raf = 0
+    const update = () => {
+      raf = 0
       setScrolled(window.scrollY > 24)
       setShowTop(window.scrollY > 700)
       const line = window.innerHeight * 0.4 // «линия чтения»: последний раздел, верх которого выше неё
@@ -111,9 +113,12 @@ export default function App() {
       }
       setActiveId(cur)
     }
-    on()
-    window.addEventListener('scroll', on, { passive: true })
-    return () => window.removeEventListener('scroll', on)
+    // не чаще раза в кадр: при быстрой прокрутке шапка обновляется в такт с отрисовкой и не отстаёт
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update) }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll) }
   }, [])
   const go = (id) => () => setOpen({ id })
 
