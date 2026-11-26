@@ -308,7 +308,15 @@ img { -webkit-user-drag: none; user-drag: none; user-select: none; pointer-event
 .vp:focus-visible { box-shadow: inset 0 0 0 3px #E1F0EB; }
 .vp.idle.playing { cursor: none; }
 .vp-video { display: block; width: 100%; height: 100%; object-fit: contain; background: #000; cursor: pointer; }
-.vp-big { position: absolute; inset: 0 0 44px 0; margin: auto; width: 72px; height: 72px; display: grid; place-items: center; padding: 0 0 0 4px; border: 0; border-radius: 50%; background: #E1F0EB; color: #2d4b46; cursor: pointer; box-shadow: 0 14px 30px -10px rgba(0, 0, 0, .7); transition: transform .3s cubic-bezier(.2, .7, .2, 1), opacity .25s; }
+.vp-big { position: absolute; inset: 0 0 44px 0; z-index: 2; margin: auto; width: 72px; height: 72px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: #E1F0EB; color: #2d4b46; cursor: pointer; box-shadow: 0 14px 30px -10px rgba(0, 0, 0, .7); transition: transform .3s cubic-bezier(.2, .7, .2, 1), opacity .25s; }
+.vp-big svg { width: 64%; height: 64%; } /* крупный треугольник, центр тяжести — в центре круга */
+/* «Повторить» — мятная таблетка со значком и подписью; при наведении заливается тёмно-зелёным, значок делает оборот */
+.vp-big.replay { width: max-content; height: 54px; display: flex; align-items: center; gap: 10px; padding: 0 24px 0 18px; overflow: hidden; isolation: isolate; border-radius: 999px; font: 700 1.02rem var(--font-main); animation: vp-pop .4s cubic-bezier(.2, .7, .2, 1); }
+.vp-big.replay svg { width: 24px; height: 24px; transition: transform .7s cubic-bezier(.2, .7, .2, 1); }
+.vp-big.replay::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: #2d4b46; transform: scale(0); transition: transform .4s cubic-bezier(.2, .7, .2, 1); }
+.vp-big.replay:focus-visible { color: #E1F0EB; outline: 2px solid #E1F0EB; outline-offset: 3px; }
+.vp-big.replay:focus-visible::before { transform: scale(1); }
+@keyframes vp-pop { from { opacity: 0; transform: scale(.85); } }
 .vp.playing .vp-big { opacity: 0; transform: scale(.8); pointer-events: none; }
 .vp-spin { position: absolute; inset: 0; margin: auto; width: 44px; height: 44px; border: 4px solid rgba(255, 255, 255, .3); border-top-color: #E1F0EB; border-radius: 50%; animation: vp-rot .8s linear infinite; pointer-events: none; }
 @keyframes vp-rot { to { transform: rotate(360deg); } }
@@ -339,11 +347,14 @@ img { -webkit-user-drag: none; user-drag: none; user-select: none; pointer-event
 .vp-vol:focus-visible { outline: 2px solid #E1F0EB; outline-offset: 2px; border-radius: 4px; }
 @media (hover: hover) and (pointer: fine) {
   .vp-btn:hover { background: rgba(255, 255, 255, .18); }
+  .vp-big.replay:hover { color: #E1F0EB; }
+  .vp-big.replay:hover::before { transform: scale(1); }
+  .vp-big.replay:hover svg { transform: rotate(360deg); }
   .vp-big:hover { transform: scale(1.08); }
   .vp-seek:hover .vp-thumb { transform: scale(1); }
   .vp-seek:hover .vp-track { height: 7px; }
 }
 @media (hover: none) { .vp-vol { display: none; } }
-@container (max-width: 380px) { .vp-vol { display: none; } .vp-big { width: 60px; height: 60px; } }
+@container (max-width: 380px) { .vp-vol { display: none; } .vp-big:not(.replay) { width: 60px; height: 60px; } .vp-big.replay { height: 48px; font-size: .95rem; padding: 0 20px 0 15px; } }
 .vp:fullscreen .vp-bar { padding: 40px 24px 16px; } .vp:fullscreen .vp-time { font-size: .95rem; }
-@media (prefers-reduced-motion: reduce) { .vp-big, .vp-bar, .vp-btn, .vp-track, .vp-thumb { transition: none; } .vp-spin { animation-duration: 2s; } }
+@media (prefers-reduced-motion: reduce) { .vp-big, .vp-big::before, .vp-big svg, .vp-bar, .vp-btn, .vp-track, .vp-thumb { transition: none; } .vp-spin { animation-duration: 2s; } }

@@ -22,6 +22,9 @@ const VOL_HIGH = <>{SPEAKER}<path d="M15.2 9.3a3.6 3.6 0 0 1 0 5.4M17.8 6.7a7.3 
 const VOL_OFF = <>{SPEAKER}<path d="M16 9.5l5 5M21 9.5l-5 5" {...line} /></>
 const FS_ENTER = <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" {...line} />
 const FS_EXIT = <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" {...line} />
+const REPLAY = <><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" {...line} /><path d="M21 3v5h-5" {...line} /></>
+// крупный треугольник для центральной кнопки: центр тяжести ровно в центре круга, скруглённые углы
+const PLAY_BIG = <path d="M8.6 6.2v11.6L19 12 8.6 6.2Z" fill="currentColor" stroke="currentColor" strokeWidth="2.4" strokeLinejoin="round" />
 
 // Свой плеер: пуск/пауза, перемотка, время, громкость, полный экран; клавиши: пробел/K, ←/→ (5 с), ↑/↓ (громкость), M, F
 export default function VideoPlayer({ src, poster, onError }) {
@@ -67,7 +70,12 @@ export default function VideoPlayer({ src, poster, onError }) {
     return () => { document.removeEventListener('fullscreenchange', on); document.removeEventListener('webkitfullscreenchange', on) }
   }, [])
 
-  const toggle = () => { const v = vid.current; if (v.paused) v.play().catch(() => {}); else v.pause() }
+  const toggle = () => {
+    const v = vid.current
+    if (!v.paused) return v.pause()
+    if (v.ended || (v.duration && v.currentTime >= v.duration - 0.05)) v.currentTime = 0 // повтор с начала
+    v.play().catch(() => {})
+  }
   const seekTo = (t) => { const v = vid.current; const x = clamp(t, 0, dur || 0); v.currentTime = x; setTime(x) }
   const setVolume = (x) => { const v = vid.current; v.volume = clamp(x, 0, 1); v.muted = v.volume === 0 }
   const toggleMute = () => {
@@ -119,6 +127,7 @@ export default function VideoPlayer({ src, poster, onError }) {
 
   const pct = (x) => `${dur ? clamp(x / dur, 0, 1) * 100 : 0}%`
   const shownVol = muted ? 0 : vol
+  const ended = !playing && dur > 0 && time >= dur - 0.05 // ролик досмотрен: вместо «Воспроизвести» — «Повторить»
   const total = fmt(dur) || '0:00'
 
   return (
@@ -134,7 +143,7 @@ export default function VideoPlayer({ src, poster, onError }) {
         onVolumeChange={(e) => { const v = e.currentTarget; setVol(v.volume); setMuted(v.muted); saved.volume = v.volume; saved.muted = v.muted }}
         onError={onError} />
       {wait && playing && <span className="vp-spin" aria-hidden="true" />}
-      <button type="button" className="vp-big" aria-label="Воспроизвести" aria-hidden={playing} tabIndex={playing ? -1 : 0} onClick={toggle}><Icon size={30}>{PLAY}</Icon></button>
+      <button type="button" className={`vp-big${ended ? ' replay' : ''}`} aria-label={ended ? 'Повторить' : 'Воспроизвести'} title={ended ? 'Повторить' : 'Воспроизвести'} aria-hidden={playing} tabIndex={playing ? -1 : 0} onClick={toggle}>{ended ? <><Icon size={24}>{REPLAY}</Icon><span>Повторить</span></> : <Icon size={46}>{PLAY_BIG}</Icon>}</button>
       <div className="vp-bar">
         <div ref={bar} className={`vp-seek${drag ? ' drag' : ''}`} role="slider" tabIndex={0} aria-label="Перемотка"
           aria-valuemin={0} aria-valuemax={Math.round(dur) || 0} aria-valuenow={Math.round(time)} aria-valuetext={`${fmt(time) || '0:00'} из ${total}`}
@@ -147,7 +156,7 @@ export default function VideoPlayer({ src, poster, onError }) {
           </div>
         </div>
         <div className="vp-row">
-          <button type="button" className="vp-btn" aria-label={playing ? 'Пауза' : 'Воспроизвести'} onClick={toggle}><Icon>{playing ? PAUSE : PLAY}</Icon></button>
+          <button type="button" className="vp-btn" aria-label={playing ? 'Пауза' : ended ? 'Повторить' : 'Воспроизвести'} onClick={toggle}><Icon>{playing ? PAUSE : ended ? REPLAY : PLAY}</Icon></button>
           <span className="vp-time">{fmt(time) || '0:00'} / {total}</span>
           <span className="vp-gap" />
           <div className="vp-volbox">
