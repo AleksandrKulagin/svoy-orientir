@@ -16,12 +16,17 @@ import folderGreen from './assets/folder-green.webp'
 import folderCactus from './assets/folder-cactus.webp'
 import folderVideo from './assets/folder-video.webp'
 import folderTiger from './assets/folder-tiger.webp'
+import folderRed from './assets/folder-red.webp'
+import potencial from './assets/potencial.webp'
+import podruchny from './assets/podruchny.webp'
+import childHead from './assets/child-head.webp'
+import kidsPhoto from './assets/kids.jpg'
 
 const LETTERS = 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЭЮЯ'.split('')
 // главная страница (учитывает base из Vite)
 const HOME = import.meta.env.BASE_URL || '/'
 
-const NAV = [['parents', 'Родителям', COLORS.green], ['glossary', 'Глоссарий', COLORS.cactus], ['handy', 'Подручный', COLORS.red], ['tariffs', 'Тарифы', COLORS.tiger]]
+const NAV = [['parents', 'Родителям', COLORS.green], ['handy', 'Подручный', COLORS.red], ['glossary', 'Глоссарий', COLORS.cactus], ['tariffs', 'Тарифы', COLORS.tiger]]
 
 
 function Folder({ img, cls = '', deco, label, aria, onClick }) {
@@ -34,19 +39,20 @@ function Folder({ img, cls = '', deco, label, aria, onClick }) {
   )
 }
 
-function Tariff({ name, img, color, badge, intro, items, price, onEnroll }) {
+function Tariff({ name, img, color, badge, intro, items, price, onEnroll, icon, cls = '' }) {
   return (
-    <article className="tariff" style={{ '--tc': color }}>
+    <article className={`tariff${cls ? ` ${cls}` : ''}`} style={{ '--tc': color }}>
       {badge && <div className="t-badge">{badge}</div>}
       <div className="t-head">
-        <img className="bg" src={img} alt="" />
+        {img && <img className="bg" src={img} alt="" />}
+        {icon && <img className="t-icon" src={icon} alt="" />}
         <h3 className="t-name">{name}</h3>
       </div>
       <div className="t-body">
         <p className="t-intro">{intro}</p>
         <ul className="t-list">{items.map((t) => <li key={t}>{t}</li>)}</ul>
         <div className="t-foot">
-          <span className="t-price">Цена: <strong>{priceText(price)}</strong></span>
+          <span className="t-price"><strong>{priceText(price)}</strong></span>
           <button type="button" className="t-btn" aria-haspopup="dialog" onClick={onEnroll}>Записаться</button>
         </div>
       </div>
@@ -130,6 +136,7 @@ export default function App() {
             <img className="logo" src={logo} alt="" />
           </a>
         <nav>{NAV.map(([id, t]) => <a key={id} href={`#${id}`} aria-current={activeId === id ? 'true' : undefined}>{t}</a>)}</nav>
+        <a className="cta" href="#tariffs">Записаться</a>
         <button type="button" className="burger" aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'} aria-expanded={menuOpen} aria-controls="mobile-menu" onClick={() => setMenuOpen(!menuOpen)}>
           <span /><span /><span />
         </button>
@@ -154,14 +161,9 @@ export default function App() {
         </div>
         <div className="side">
           <div className="intro">
-            <p><span className="lead">Сезонный трек «Свой ориентир» </span>— это бережное пространство и понятная опора для родителей детей с ТМНР. Мы знаем, сколько сил и времени может уходить на ежедневную заботу о ребёнке. Когда всё держится на вас, легко потерять точку опоры и остаться один на один с тревогой.</p>
-            <p>Что ждёт вас внутри сезона:</p>
-            <ul>
-              <li>– <b>Понятные разборы без лишней информации.</b> Разбор сложных задач из жизни, чтобы Вы сразу знали, какой шаг сделать следующим.</li>
-              <li>– <b>Поддержка окружающих.</b> Безопасное пространство, где можно выдохнуть, задать наболевший вопрос или просто порассуждать без страха осуждения.</li>
-              <li>– <b>Проверенные ориентиры.</b> Готовые памятки, чек-листы и инструкции, которые экономят ваше время и нервы.</li>
-            </ul>
-            <p><span className="lead">«Свой ориентир» </span>— это Ваш личный маршрут в кругу людей, которые понимают без лишних слов. Выбирайте комфортный формат участия, выделяйте для себя важное и помните — Вы не одни.</p>
+            <p><span className="lead">Сезонный трек «Свой ориентир» </span>— это пространство поддержки и заботы для родителей детей с ТМНР.</p>
+            <p>Мы знаем, сколько сил, времени и душевных ресурсов требует ежедневная забота о ребёнке. Когда большая часть ответственности лежит на ваших плечах, бывает непросто найти время для себя, справиться с тревогой и почувствовать поддержку.</p>
+            <p>«Свой ориентир» поможет вам не оставаться один на один с переживаниями, найти понимание, внутреннюю опору и ресурсы, чтобы двигаться дальше.</p>
           </div>
           <div className="sand">
             <img className="kid-label" src={kidLabel} alt="" />
@@ -176,9 +178,12 @@ export default function App() {
           <img className={promoAlt ? 'on' : ''} src={promo2} alt="Малыш с радостью играет с цветными сенсорными материалами" aria-hidden={!promoAlt} loading="lazy" decoding="async" />
         </div>
         <div className="promo-side">
-          <button type="button" className="switch" role="switch" aria-checked={promoAlt} aria-label="Сменить изображение" onClick={() => setPromoAlt(!promoAlt)}>
-            <span className="switch-knob" />
-          </button>
+          <div className="promo-top">
+            <button type="button" className="switch" role="switch" aria-checked={promoAlt} aria-label="Сменить изображение" onClick={() => setPromoAlt(!promoAlt)}>
+              <span className="switch-knob" />
+            </button>
+            <img className="promo-arrow" src={potencial} alt="" aria-hidden="true" />
+          </div>
           <p className="promo-text">С помощью трека Вы найдете инструменты к развитию коммуникативного потенциала с Вашим ребенком. <span className="lead">Довольны будут все!</span></p>
         </div>
       </section>
@@ -188,6 +193,17 @@ export default function App() {
         <div className="fgrid toy-row">
           <Folder img={folderToys} cls="toys" label="Входной диагностический тест" onClick={go('diag')} />
           <Folder img={folderGreen} label="Клинические кейсы" onClick={go('cases')} />
+        </div>
+      </section>
+
+      <section id="handy">
+        <div className="handy-row">
+          <div className="handy-left">
+            <img className="handy-title" src={podruchny} alt="Подручный — полезные материалы" />
+            <div className="handy-note">Можно какое-то описание добавить</div>
+          </div>
+          <Folder img={folderKid} cls="kid" label="Микрошаги к самостоятельности" onClick={go('micro')} />
+          <Folder img={folderVideo} cls="vid" aria="Смотреть видео" onClick={go('video')} />
         </div>
       </section>
 
@@ -207,22 +223,31 @@ export default function App() {
         </div>
       </section>
 
-      <section id="handy">
-        <div className="fgrid toy-row">
-          <Folder img={folderKid} cls="kid" label="Микрошаги к самостоятельности" onClick={go('micro')} />
-          <Folder img={folderVideo} cls="vid" aria="Смотреть видео" onClick={go('video')} />
-        </div>
-      </section>
-
       <section id="tariffs">
         <h2>Тарифы</h2>
+        <div className="tariffs-intro">
+          <div className="ti-text">
+            <p>В треке «Свой ориентир» Вас ждёт не просто полезная информация, а поддержка, помогающая справляться с повседневными вопросами, находить решения и чувствовать себя увереннее.</p>
+            <p><b>Трек «Свой ориентир» включает в себя:</b></p>
+            <ul>
+              <li>– <b>Практические разборы.</b> Обсуждения реальных жизненных ситуаций, разбираемся в сложных вопросах и вместе ищем решения, которые можно применить уже сегодня.</li>
+              <li>– <b>Поддержка и общение.</b> Создаю пространство, где можно задать волнующий вопрос, поделиться переживаниями, услышать других родителей и быть понятым без осуждения.</li>
+              <li>– <b>Полезные материалы.</b> Предлагаю памятки, чек-листы и инструкции, к которым можно возвращаться в нужный момент, экономя время и силы на поиске информации.</li>
+            </ul>
+            <p><b>«Свой ориентир» — это возможность выбрать поддержку, которая нужна Вам сейчас.</b> Определите подходящий формат участия, выделите время для себя и позвольте себе получить заботу, понимание и опору, которых порой так не хватает.</p>
+          </div>
+          <img className="ti-photo" src={kidsPhoto} alt="Дети выполняют упражнения в комнате" />
+        </div>
         <div className="tgrid" ref={trackRef} onScroll={onTrackScroll}>
-          <Tariff name="Знакомство" img={folderGreen} color={COLORS.green} price={0} onEnroll={() => setOpen({ tariff: 'intro' })}
-            intro="Идеально для того, чтобы ознакомиться с форматом и найти для себя первые ответы."
-            items={['Доступ к вводному модулю и базовым памяткам платформы.', 'Участие в одной открытой встрече-знакомстве с куратором и родителями.', 'Доступ в общий чат сезона для навигации и общения.', 'Возможность перейти на основной тариф “Полный ориентир” в любой момент.']} />
+          <Tariff name="Первый ориентир" img={folderGreen} color={COLORS.green} price={0} onEnroll={() => setOpen({ tariff: 'intro' })}
+            intro="Идеально для первого знакомства с форматом трека"
+            items={['Доступ к вводному модулю и базовым памяткам платформы.', 'Участие в одной открытой онлайн-встрече с куратором и родителями.', 'Доступ в общий чат сезона.', 'Возможность перейти на основной тариф «Полный ориентир» и получить доступ ко всем возможностям.']} />
           <Tariff name="Полный ориентир" img={folderTiger} color={COLORS.tiger} price={799} onEnroll={() => setOpen({ tariff: 'full' })} badge="Методический инструментарий в 🎁"
-            intro="Для тех, кому нужны видеоинструкции и глубокая поддержка на протяжении всего сезона."
-            items={['Короткие и содержательные уроки, которые можно смотреть в любое время (записи остаются у вас).', 'Все рабочие материалы: шаблоны заявлений, чек-листы и пошаговые алгоритмы действий.', 'Регулярные онлайн-созвоны в малых группах, где можно разобрать вашу конкретную ситуацию.', 'Возможность задать свой вопрос эксперту и получить адресный разбор.']} />
+            intro="Формат для тех, кому важно не просто получить информацию, а иметь поддержку на протяжении всего сезона."
+            items={['Короткие, понятные и содержательные видеоролики, записи которых остаются у вас.', 'Шаблоны заявлений, памятки, чек-листы и пошаговые инструкции, которые помогут разобраться, что делать в конкретной ситуации.', 'Онлайн-встречи в небольших группах, где можно поделиться своими переживаниями, задать вопросы и вместе с куратором разобрать то, что волнует именно вас.', 'Возможность обратиться к эксперту со своим вопросом и получить индивидуальный разбор с практическими рекомендациями.']} />
+          <Tariff cls="supervision" img={folderRed} icon={childHead} name="Супервизионный ориентир специалисту" color={COLORS.red} price={799} onEnroll={() => setOpen({ tariff: 'supervision' })}
+            intro="Формат для специалистов"
+            items={['Супервизии на схожие темы по запросу (индивидуально-подгрупповая 40 мин).']} />
         </div>
         <div className="tdots" role="group" aria-label="Выбор тарифа">
           {Object.values(TARIFFS).map((t, i) => (

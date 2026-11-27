@@ -20,8 +20,9 @@ export const TERMS = {
 }
 
 export const TARIFFS = {
-  intro: { title: 'Знакомство', color: COLORS.green, price: 0 },
+  intro: { title: 'Первый ориентир', color: COLORS.green, price: 0 },
   full: { title: 'Полный ориентир', color: COLORS.tiger, price: 799 },
+  supervision: { title: 'Супервизионный ориентир специалисту', color: COLORS.red, price: 799 },
 }
 
 // Видео раздела. Список собирается АВТОМАТИЧЕСКИ из папки public/videos (см. vite-plugin-videos.js):
@@ -45,5 +46,5 @@ export const VIDEOS = [
   ...EMBEDS.map((v) => ({ duration: '', src: '', poster: '', desc: '', ...v })),
 ]
 
-// Подпись цены: 0 показываем как «бесплатно»
-export const priceText = (p) => (p === 0 ? 'бесплатно' : `${p} ₽`)
+// Подпись цены: 0 показываем как «Бесплатно»
+export const priceText = (p) => (p === 0 ? 'Бесплатно' : `${p} ₽`)
